@@ -1,6 +1,6 @@
 ---
 name: Data-Pond
-version: 0.000
+version: 0.001
 author:
   - 'Andrew Main (Zefram) <zefram@fysh.org>'
 abstract: Perl-based open notation for data
@@ -27,7 +27,7 @@ dynamic_config: 1
 provides:
   Data::Pond:
     file: lib/Data/Pond.pm
-    version: 0.000
+    version: 0.001
 generated_by: Module::Build version 0.31012
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

@@ -63,7 +63,7 @@ package Data::Pond;
 use warnings;
 use strict;
 
-our $VERSION = "0.000";
+our $VERSION = "0.001";
 
 use parent "Exporter";
 our @EXPORT_OK = qw(
@@ -114,11 +114,11 @@ my $pond_sqstringchar_rx = qr/[\ -\&\(-\[\]-\~\x{a1}-\x{7fffffff}]/;
 my $pond_sqstring_rx = qr/(?>'(?:
 	$pond_sqstringchar_rx+
 	|\\[\ -\~\x{a1}-\x{7fffffff}]
-)*')/s;
+)*')/x;
 my $pond_ascii_sqstring_rx = qr/(?>'(?:
 	[\ -\&\(-\[\]-\~]+
 	|\\[\ -\~]
-)*')/;
+)*')/x;
 
 my $pond_number_rx = qr/0|[1-9][0-9]*/;
 
