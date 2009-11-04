@@ -2,6 +2,12 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define PERL_VERSION_DECIMAL(r,v,s) (r*1000000 + v*1000 + s)
+#define PERL_DECIMAL_VERSION \
+	PERL_VERSION_DECIMAL(PERL_REVISION,PERL_VERSION,PERL_SUBVERSION)
+#define PERL_VERSION_GE(r,v,s) \
+	(PERL_DECIMAL_VERSION >= PERL_VERSION_DECIMAL(r,v,s))
+
 #ifndef hv_fetchs
 # define hv_fetchs(hv, keystr, lval) \
 		hv_fetch(hv, ""keystr"", sizeof(keystr)-1, lval)
@@ -9,11 +15,19 @@
 
 /* parameter classification */
 
-#define sv_is_undef(sv) (SvTYPE(sv) != SVt_PVGV && !SvOK(sv))
+#define sv_is_glob(sv) (SvTYPE(sv) == SVt_PVGV)
+
+#if PERL_VERSION_GE(5,11,0)
+# define sv_is_regexp(sv) (SvTYPE(sv) == SVt_REGEXP)
+#else /* <5.11.0 */
+# define sv_is_regexp(sv) 0
+#endif /* <5.11.0 */
+
+#define sv_is_undef(sv) (!sv_is_glob(sv) && !sv_is_regexp(sv) && !SvOK(sv))
 
 #define sv_is_string(sv) \
-	(SvTYPE(sv) != SVt_PVGV && \
-	(SvFLAGS(sv) & (SVf_IOK|SVf_NOK|SVf_POK|SVp_IOK|SVp_NOK|SVp_POK)))
+	(!sv_is_glob(sv) && !sv_is_regexp(sv) && \
+	 (SvFLAGS(sv) & (SVf_IOK|SVf_NOK|SVf_POK|SVp_IOK|SVp_NOK|SVp_POK)))
 
 /* exceptions */
 
@@ -427,9 +441,8 @@ static SV *parse_datum(U8 *end, U8 **pp)
 			}
 		}
 		p++;
-		SvREFCNT_inc((SV*)array);
 		datum = is_hash ? array_to_hash(array) :
-			sv_2mortal(newRV_noinc((SV*)array));
+			sv_2mortal(newRV_inc((SV*)array));
 	} else if(c & 0x80) {
 		throw_syntax_error(p);
 	} else {

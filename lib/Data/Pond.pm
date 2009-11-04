@@ -13,7 +13,7 @@ Data::Pond - Perl-based open notation for data
 
 	$datum = pond_read_datum($text);
 	$text = pond_write_datum($datum);
-	$text = pond_write_datum($datum, 0);
+	$text = pond_write_datum($datum, { indent => 0 });
 
 =head1 DESCRIPTION
 
@@ -60,10 +60,11 @@ systems that can't handle XS.
 
 package Data::Pond;
 
+{ use 5.008; }
 use warnings;
 use strict;
 
-our $VERSION = "0.001";
+our $VERSION = "0.002";
 
 use parent "Exporter";
 our @EXPORT_OK = qw(

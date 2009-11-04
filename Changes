@@ -1,3 +1,16 @@
+version 0.002; 2009-11-04
+
+  * bugfix: in XS implementation, avoid memory leak when parsing hashes
+
+  * port to Perl 5.11, supporting new first-class regexp objects in
+    type checking
+
+  * correct example of pond_write_datum options in synopsis
+
+  * check for required Perl version at runtime
+
+  * remove bogus "exit 0" from Build.PL
+
 version 0.001; 2009-05-15
 
   * bugfix: correct flags on exported regexps (lack of /x caused these
