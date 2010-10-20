@@ -1,3 +1,20 @@
+version 0.003; 2010-10-20
+
+  * use full stricture in test suite
+
+  * in Build.PL, explicitly declare configure-time requirements
+
+  * in XS, use newSVpvs() and sv_catpvs_nomg() wherever appropriate
+
+  * in XS, use PERL_NO_GET_CONTEXT for efficiency
+
+  * also test POD coverage of pure Perl implementation
+
+  * in Build.PL, explicitly set needs_compiler to avoid bogus
+    auto-dependency on ExtUtils::CBuilder
+
+  * add MYMETA.yml to .cvsignore
+
 version 0.002; 2009-11-04
 
   * bugfix: in XS implementation, avoid memory leak when parsing hashes

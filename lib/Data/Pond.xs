@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT 1
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -11,7 +12,16 @@
 #ifndef hv_fetchs
 # define hv_fetchs(hv, keystr, lval) \
 		hv_fetch(hv, ""keystr"", sizeof(keystr)-1, lval)
-#endif
+#endif /* !hv_fetchs */
+
+#ifndef newSVpvs
+# define newSVpvs(string) newSVpvn(""string"", sizeof(string)-1)
+#endif /* !newSVpvs */
+
+#ifndef sv_catpvs_nomg
+# define sv_catpvs_nomg(sv, string) \
+	sv_catpvn_nomg(sv, ""string"", sizeof(string)-1)
+#endif /* !sv_catpvs_nomg */
 
 /* parameter classification */
 
@@ -66,7 +76,8 @@
  * no non-ASCII characters) or a mortal upgraded copy.
  */
 
-static U32 char_unicode(U8 *p)
+#define char_unicode(p) THX_char_unicode(aTHX_ p)
+static U32 THX_char_unicode(pTHX_ U8 *p)
 {
 	U32 val = *p;
 	U8 req_c1;
@@ -127,7 +138,8 @@ static U32 char_unicode(U8 *p)
 	return val;
 }
 
-static void sv_cat_unichar(SV *str, U32 val)
+#define sv_cat_unichar(str, val) THX_sv_cat_unichar(aTHX_ str, val)
+static void THX_sv_cat_unichar(pTHX_ SV *str, U32 val)
 {
 	STRLEN vlen;
 	U8 *vstart, *voldend, *vnewend;
@@ -139,7 +151,8 @@ static void sv_cat_unichar(SV *str, U32 val)
 	SvCUR_set(str, vnewend - vstart);
 }
 
-static SV *upgrade_sv(SV *input)
+#define upgrade_sv(input) THX_upgrade_sv(aTHX_ input)
+static SV *THX_upgrade_sv(pTHX_ SV *input)
 {
 	U8 *p, *end;
 	STRLEN len;
@@ -263,10 +276,11 @@ static U8 const asciichar_backslash[128] = {
 	0xfe, 0xfd, 0xfd, 0x7b, 0x7c, 0x7d, 0x7e, 0xfd, /* x to DEL */
 };
 
-static SV *parse_dqstring(U8 *end, U8 **pp)
+#define parse_dqstring(end, pp) THX_parse_dqstring(aTHX_ end, pp)
+static SV *THX_parse_dqstring(pTHX_ U8 *end, U8 **pp)
 {
 	U8 *p = *pp;
-	SV *datum = sv_2mortal(newSVpvn("", 0));
+	SV *datum = sv_2mortal(newSVpvs(""));
 	SvUTF8_on(datum);
 	while(1) {
 		U8 c = *p, e;
@@ -349,10 +363,11 @@ static SV *parse_dqstring(U8 *end, U8 **pp)
 	return datum;
 }
 
-static SV *parse_sqstring(U8 *end, U8 **pp)
+#define parse_sqstring(end, pp) THX_parse_sqstring(aTHX_ end, pp)
+static SV *THX_parse_sqstring(pTHX_ U8 *end, U8 **pp)
 {
 	U8 *p = *pp;
-	SV *datum = sv_2mortal(newSVpvn("", 0));
+	SV *datum = sv_2mortal(newSVpvs(""));
 	SvUTF8_on(datum);
 	while(1) {
 		U8 c = *p;
@@ -381,7 +396,8 @@ static SV *parse_sqstring(U8 *end, U8 **pp)
 	return datum;
 }
 
-static SV *array_to_hash(AV *array)
+#define array_to_hash(array) THX_array_to_hash(aTHX_ array)
+static SV *THX_array_to_hash(pTHX_ AV *array)
 {
 	HV *hash;
 	SV *href;
@@ -407,9 +423,9 @@ static SV *array_to_hash(AV *array)
 	return href;
 }
 
-static SV *parse_datum(U8 *end, U8 **pp);
-
-static SV *parse_datum(U8 *end, U8 **pp)
+#define parse_datum(end, pp) THX_parse_datum(aTHX_ end, pp)
+static SV *THX_parse_datum(pTHX_ U8 *end, U8 **pp);
+static SV *THX_parse_datum(pTHX_ U8 *end, U8 **pp)
 {
 	U8 *p = *pp;
 	U8 c = *p;
@@ -517,7 +533,10 @@ static U8 const asciichar_quote[128] = {
 
 static char const hexdig[16] = "0123456789abcdef";
 
-static void serialise_as_string(struct writer_options *wo, SV *out, SV *datum)
+#define serialise_as_string(wo, out, datum) \
+	THX_serialise_as_string(aTHX_ wo, out, datum)
+static void THX_serialise_as_string(pTHX_ struct writer_options *wo,
+	SV *out, SV *datum)
 {
 	U8 *p;
 	STRLEN len;
@@ -527,7 +546,7 @@ static void serialise_as_string(struct writer_options *wo, SV *out, SV *datum)
 	} else {
 		U8 *e = p + len;
 		U8 *lstart = p;
-		sv_catpvn_nomg(out, "\"", 1);
+		sv_catpvs_nomg(out, "\"");
 		while(p != e) {
 			U8 c = *p;
 			if(c & 0x80) {
@@ -581,7 +600,7 @@ static void serialise_as_string(struct writer_options *wo, SV *out, SV *datum)
 			}
 		}
 		if(lstart != p) sv_catpvn_nomg(out, (char*)lstart, p-lstart);
-		sv_catpvn_nomg(out, "\"", 1);
+		sv_catpvs_nomg(out, "\"");
 	}
 }
 
@@ -595,7 +614,10 @@ static int pvn_is_bareword(U8 *p, STRLEN len)
 	return 1;
 }
 
-static void serialise_as_bareword(struct writer_options *wo, SV *out, SV *datum)
+#define serialise_as_bareword(wo, out, datum) \
+	THX_serialise_as_bareword(aTHX_ wo, out, datum)
+static void THX_serialise_as_bareword(pTHX_ struct writer_options *wo,
+	SV *out, SV *datum)
 {
 	U8 *p;
 	STRLEN len;
@@ -607,7 +629,8 @@ static void serialise_as_bareword(struct writer_options *wo, SV *out, SV *datum)
 	}
 }
 
-static void serialise_newline(struct writer_options *wo, SV *out)
+#define serialise_newline(wo, out) THX_serialise_newline(aTHX_ wo, out)
+static void THX_serialise_newline(pTHX_ struct writer_options *wo, SV *out)
 {
 	int indent = wo->indent;
 	if(indent != -1) {
@@ -620,16 +643,22 @@ static void serialise_newline(struct writer_options *wo, SV *out)
 	}
 }
 
-static void serialise_datum(struct writer_options *wo, SV *out, SV *datum);
+#define serialise_datum(wo, out, datum) \
+	THX_serialise_datum(aTHX_ wo, out, datum)
+static void THX_serialise_datum(pTHX_ struct writer_options *wo,
+	SV *out, SV *datum);
 
-static void serialise_array(struct writer_options *wo, SV *out, AV *adatum)
+#define serialise_array(wo, out, adatum) \
+	THX_serialise_array(aTHX_ wo, out, adatum)
+static void THX_serialise_array(pTHX_ struct writer_options *wo,
+	SV *out, AV *adatum)
 {
 	I32 alen = av_len(adatum), pos;
 	if(alen == -1) {
-		sv_catpvn_nomg(out, "[]", 2);
+		sv_catpvs_nomg(out, "[]");
 		return;
 	}
-	sv_catpvn_nomg(out, "[", 1);
+	sv_catpvs_nomg(out, "[");
 	if(wo->indent != -1) wo->indent += 4;
 	serialise_newline(wo, out);
 	for(pos = 0; ; pos++) {
@@ -637,22 +666,25 @@ static void serialise_array(struct writer_options *wo, SV *out, AV *adatum)
 			*av_fetch(adatum, pos, 0));
 		if(pos == alen && wo->indent == -1)
 			break;
-		sv_catpvn_nomg(out, ",", 1);
+		sv_catpvs_nomg(out, ",");
 		if(pos == alen)
 			break;
 		serialise_newline(wo, out);
 	}
 	if(wo->indent != -1) wo->indent -= 4;
 	serialise_newline(wo, out);
-	sv_catpvn_nomg(out, "]", 1);
+	sv_catpvs_nomg(out, "]");
 }
 
-static void serialise_hash(struct writer_options *wo, SV *out, HV *hdatum)
+#define serialise_hash(wo, out, hdatum) \
+	THX_serialise_hash(aTHX_ wo, out, hdatum)
+static void THX_serialise_hash(pTHX_ struct writer_options *wo,
+	SV *out, HV *hdatum)
 {
 	AV *keys;
 	U32 nelem = hv_iterinit(hdatum), pos;
 	if(nelem == 0) {
-		sv_catpvn_nomg(out, "{}", 2);
+		sv_catpvs_nomg(out, "{}");
 		return;
 	}
 	keys = newAV();
@@ -664,7 +696,7 @@ static void serialise_hash(struct writer_options *wo, SV *out, HV *hdatum)
 		av_push(keys, SvREFCNT_inc(keysv));
 	}
 	sortsv(AvARRAY(keys), nelem, Perl_sv_cmp);
-	sv_catpvn_nomg(out, "{", 1);
+	sv_catpvs_nomg(out, "{");
 	if(wo->indent != -1) wo->indent += 4;
 	serialise_newline(wo, out);
 	for(pos = 0; ; pos++) {
@@ -673,28 +705,29 @@ static void serialise_hash(struct writer_options *wo, SV *out, HV *hdatum)
 		char *key;
 		serialise_as_bareword(wo, out, keysv);
 		if(wo->indent == -1) {
-			sv_catpvn_nomg(out, "=>", 2);
+			sv_catpvs_nomg(out, "=>");
 		} else {
-			sv_catpvn_nomg(out, " => ", 4);
+			sv_catpvs_nomg(out, " => ");
 		}
 		key = SvPV(keysv, klen);
 		serialise_datum(wo, out, *hv_fetch(hdatum, key, -klen, 0));
 		if(pos == nelem-1 && wo->indent == -1)
 			break;
-		sv_catpvn_nomg(out, ",", 1);
+		sv_catpvs_nomg(out, ",");
 		if(pos == nelem-1)
 			break;
 		serialise_newline(wo, out);
 	}
 	if(wo->indent != -1) wo->indent -= 4;
 	serialise_newline(wo, out);
-	sv_catpvn_nomg(out, "}", 1);
+	sv_catpvs_nomg(out, "}");
 }
 
-static void serialise_datum(struct writer_options *wo, SV *out, SV *datum)
+static void THX_serialise_datum(pTHX_ struct writer_options *wo,
+	SV *out, SV *datum)
 {
 	if(sv_is_undef(datum) && wo->undef_is_empty) {
-		sv_catpvn_nomg(out, "\"\"", 2);
+		sv_catpvs_nomg(out, "\"\"");
 	} else if(sv_is_string(datum)) {
 		datum = upgrade_sv(datum);
 		serialise_as_string(wo, out, datum);
@@ -771,7 +804,7 @@ CODE:
 			wo.unicode = !!SvTRUE(item);
 		}
 	}
-	RETVAL = sv_2mortal(newSVpvn("", 0));
+	RETVAL = sv_2mortal(newSVpvs(""));
 	SvUTF8_on(RETVAL);
 	serialise_datum(&wo, RETVAL, datum);
 	SvREFCNT_inc(RETVAL);

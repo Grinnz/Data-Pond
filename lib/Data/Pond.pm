@@ -64,7 +64,7 @@ package Data::Pond;
 use warnings;
 use strict;
 
-our $VERSION = "0.002";
+our $VERSION = "0.003";
 
 use parent "Exporter";
 our @EXPORT_OK = qw(
@@ -478,6 +478,8 @@ Andrew Main (Zefram) <zefram@fysh.org>
 =head1 COPYRIGHT
 
 Copyright (C) 2009 PhotoBox Ltd
+
+Copyright (C) 2010 Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 LICENSE
 

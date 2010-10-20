@@ -13,6 +13,7 @@ t/error_pp.t
 t/expr.t
 t/expr_pp.t
 t/pod_cvg.t
+t/pod_cvg_pp.t
 t/pod_syn.t
 t/setup_pp.pl
 t/undef.t
