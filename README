@@ -12,13 +12,14 @@ is based on JavaScript, but Pond represents fewer data types directly.
 
 The data that can be represented in Pond consist of strings (of
 characters), arrays, and string-keyed hashes.  Arrays and hashes can
-recursively contain any of these kinds of data.  This does not cover
-the full range of data types that Perl or other languages can handle,
-but is intended to be a limited, fixed repertoire of data types that many
-languages can readily process.  It is intended that more complex data can
-be represented using these basic types.  The arrays and hashes provide
-structuring facilities (ordered and unordered collections, respectively),
-and strings are a convenient way to represent atomic data.
+recursively (but not cyclically) contain any of these kinds of data.
+This does not cover the full range of data types that Perl or other
+languages can handle, but is intended to be a limited, fixed repertoire
+of data types that many languages can readily process.  It is intended
+that more complex data can be represented using these basic types.
+The arrays and hashes provide structuring facilities (ordered and
+unordered collections, respectively), and strings are a convenient way
+to represent atomic data.
 
 The Pond syntax is a subset of Perl expression syntax, consisting of
 string literals and constructors for arrays and hashes.  Strings may
@@ -58,7 +59,7 @@ COPYRIGHT
 
 Copyright (C) 2009 PhotoBox Ltd
 
-Copyright (C) 2010 Andrew Main (Zefram) <zefram@fysh.org>
+Copyright (C) 2010, 2012 Andrew Main (Zefram) <zefram@fysh.org>
 
 LICENSE
 

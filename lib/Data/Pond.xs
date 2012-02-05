@@ -749,6 +749,8 @@ static void THX_serialise_datum(pTHX_ struct writer_options *wo,
 
 MODULE = Data::Pond PACKAGE = Data::Pond
 
+PROTOTYPES: DISABLE
+
 SV *
 pond_read_datum(SV *text_sv)
 PROTOTYPE: $

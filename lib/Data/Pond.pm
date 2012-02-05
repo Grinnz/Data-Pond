@@ -25,13 +25,14 @@ is based on JavaScript, but Pond represents fewer data types directly.
 
 The data that can be represented in Pond consist of strings (of
 characters), arrays, and string-keyed hashes.  Arrays and hashes can
-recursively contain any of these kinds of data.  This does not cover
-the full range of data types that Perl or other languages can handle,
-but is intended to be a limited, fixed repertoire of data types that many
-languages can readily process.  It is intended that more complex data can
-be represented using these basic types.  The arrays and hashes provide
-structuring facilities (ordered and unordered collections, respectively),
-and strings are a convenient way to represent atomic data.
+recursively (but not cyclically) contain any of these kinds of data.
+This does not cover the full range of data types that Perl or other
+languages can handle, but is intended to be a limited, fixed repertoire
+of data types that many languages can readily process.  It is intended
+that more complex data can be represented using these basic types.
+The arrays and hashes provide structuring facilities (ordered and
+unordered collections, respectively), and strings are a convenient way
+to represent atomic data.
 
 The Pond syntax is a subset of Perl expression syntax, consisting of
 string literals and constructors for arrays and hashes.  Strings may
@@ -64,7 +65,7 @@ package Data::Pond;
 use warnings;
 use strict;
 
-our $VERSION = "0.003";
+our $VERSION = "0.004";
 
 use parent "Exporter";
 our @EXPORT_OK = qw(
@@ -233,7 +234,7 @@ if($@ eq "") {
 
 __DATA__
 
-use Params::Classify qw(is_undef is_string is_ref);
+use Params::Classify 0.000 qw(is_undef is_string is_ref);
 
 =head1 FUNCTIONS
 
@@ -362,7 +363,7 @@ that control the serialisation process.  The recognised options are:
 
 If C<undef> (which is the default), no optional whitespace will be added.
 Otherwise it must be a non-negative integer, and the datum will be laid
-out with whitespace (where it is optional) to illustrate the struture by
+out with whitespace (where it is optional) to illustrate the structure by
 indentation.  The number given must be the number of leading spaces on
 the line on which the resulting element will be placed.  If whitespace
 is added, the element will be arranged to end on a line of the same
@@ -479,7 +480,7 @@ Andrew Main (Zefram) <zefram@fysh.org>
 
 Copyright (C) 2009 PhotoBox Ltd
 
-Copyright (C) 2010 Andrew Main (Zefram) <zefram@fysh.org>
+Copyright (C) 2010, 2012 Andrew Main (Zefram) <zefram@fysh.org>
 
 =head1 LICENSE
 
