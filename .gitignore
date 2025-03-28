@@ -1,8 +1,8 @@
 /Build
 /Makefile
 /_build
+/.build
 /blib
-/META.json
 /META.yml
 /MYMETA.json
 /MYMETA.yml
