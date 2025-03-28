@@ -9,7 +9,6 @@ use lib qw{inc}; use Local::ModuleBuild;
 my %module_build_args = (
   "build_requires" => {
     "Module::Build" => "0.28",
-    "Test::More" => 0,
     "perl" => "5.008",
     "strict" => 0,
     "warnings" => 0
@@ -44,7 +43,10 @@ my %module_build_args = (
   "test_requires" => {
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
-    "Test::More" => 0
+    "Test::More" => 0,
+    "perl" => "5.008",
+    "strict" => 0,
+    "warnings" => 0
   }
 );
 

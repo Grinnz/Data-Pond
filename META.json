@@ -30,7 +30,6 @@
          },
          "requires" : {
             "Module::Build" : "0.28",
-            "Test::More" : "0",
             "perl" : "5.008",
             "strict" : "0",
             "warnings" : "0"
@@ -77,7 +76,10 @@
          "requires" : {
             "ExtUtils::MakeMaker" : "0",
             "File::Spec" : "0",
-            "Test::More" : "0"
+            "Test::More" : "0",
+            "perl" : "5.008",
+            "strict" : "0",
+            "warnings" : "0"
          }
       }
    },
@@ -101,7 +103,6 @@
    },
    "version" : "0.005",
    "x_contributors" : [
-      "Andrew Main (Zefram) <zefram@fysh.org>",
       "Dan Book <grinnz@grinnz.com>"
    ],
    "x_generated_by_perl" : "v5.40.1",
