@@ -86,7 +86,7 @@
    "provides" : {
       "Data::Pond" : {
          "file" : "lib/Data/Pond.pm",
-         "version" : "0.005"
+         "version" : "0.006"
       }
    },
    "release_status" : "stable",
@@ -101,7 +101,7 @@
          "web" : "https://github.com/Grinnz/Data-Pond"
       }
    },
-   "version" : "0.005",
+   "version" : "0.006",
    "x_contributors" : [
       "Dan Book <grinnz@grinnz.com>"
    ],

@@ -24,7 +24,7 @@ my %module_build_args = (
     "Andrew Main (Zefram) <zefram\@fysh.org>"
   ],
   "dist_name" => "Data-Pond",
-  "dist_version" => "0.005",
+  "dist_version" => "0.006",
   "license" => "perl",
   "module_name" => "Data::Pond",
   "recommends" => {
