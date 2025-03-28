@@ -13,7 +13,7 @@ unless(__PACKAGE__->can("have_c_compiler")) {
 		return $cb && $cb->have_compiler;
 	};
 }
-if($Module::Build::VERSION < 0.33) {
+unless(eval { Module::Build->VERSION('0.33'); 1 }) {
 	# Older versions of Module::Build have a bug where if the
 	# cbuilder object is used at Build.PL time (which it will
 	# be for this distribution due to the logic in
