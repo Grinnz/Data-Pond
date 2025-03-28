@@ -31,3 +31,6 @@ runtime:
     warnings: 0
   recommends:
     XSLoader: 0
+develop:
+  requires:
+    Test::Pod::Coverage: 0
